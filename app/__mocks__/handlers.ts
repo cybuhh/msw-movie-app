@@ -1,5 +1,7 @@
 import { http, HttpResponse, delay, graphql } from "msw";
 import { movies } from "./movies";
+import { graphql as executeGraphql } from "graphql";
+import schema from "./graphql-schema";
 
 export const handlers = [
   http.get("https://api.example.com/movies/featured", () => {
@@ -60,15 +62,22 @@ export const handlers = [
     });
   }),
 
-  graphql.query("ListReviews", ({ variables }) => {
-    const { movieId } = variables;
-    const movie = movies.find((movie) => movie.id === movieId);
-    const reviews = movie?.reviews || [];
+  graphql.query("ListReviews", async ({ query, variables }) => {
+    const { errors, data } = await executeGraphql({
+      schema,
+      source: query,
+      variableValues: variables,
+      rootValue: {
+        reviews({ movieId }: { movieId: string }) {
+          const movie = movies.find((movie) => movie.id === movieId);
+          return movie?.reviews || [];
+        },
+      },
+    });
 
     return HttpResponse.json({
-      data: {
-        reviews,
-      },
+      errors,
+      data,
     });
   }),
 
