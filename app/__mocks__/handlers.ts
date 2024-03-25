@@ -53,4 +53,16 @@ export const handlers = [
   http.get("https://api.example.com/movies/featured", () => {
     return HttpResponse.json(movies);
   }),
+
+  http.get("https://api.example.com/movies/:slug", ({ params }) => {
+    const { slug } = params;
+
+    const movie = movies.find((movie) => movie.slug === slug);
+
+    if (movie) {
+      return HttpResponse.json(movie);
+    }
+
+    return new HttpResponse("Not found", { status: 404 });
+  }),
 ];
