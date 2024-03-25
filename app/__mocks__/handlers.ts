@@ -69,6 +69,20 @@ export const handlers = [
   http.get("/api/recommendations", ({ request }) => {
     const url = new URL(request.url);
     const movieId = url.searchParams.get("movieId");
+
+    if (!movieId) {
+      return HttpResponse.json(
+        {
+          error: 'Missing query parameter "movieId"',
+        },
+        { status: 400 }
+      );
+    }
+
+    if (movieId === "b2b7e2d9-8b2e-4b7a-9b8a-7f9a0d7f7e0e") {
+      return new HttpResponse(null, { status: 500 });
+    }
+
     const recommendations = movies.filter((movie) => movie.id !== movieId);
 
     return HttpResponse.json(recommendations);
