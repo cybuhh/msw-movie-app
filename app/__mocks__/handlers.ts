@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, delay } from "msw";
 
 const reviews = [
   {
@@ -66,9 +66,11 @@ export const handlers = [
     return new HttpResponse("Not found", { status: 404 });
   }),
 
-  http.get("/api/recommendations", ({ request }) => {
+  http.get("/api/recommendations", async ({ request }) => {
     const url = new URL(request.url);
     const movieId = url.searchParams.get("movieId");
+
+    await delay(500);
 
     if (!movieId) {
       return HttpResponse.json(
