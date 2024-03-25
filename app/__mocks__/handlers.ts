@@ -89,4 +89,22 @@ export const handlers = [
 
     return HttpResponse.json(recommendations);
   }),
+
+  http.post("https://auth.provider.com/validate", async ({ request }) => {
+    const data = await request.formData();
+    const email = data.get("email");
+    const password = data.get("password");
+
+    if (!email || !password) {
+      return new HttpResponse(null, { status: 400 });
+    }
+
+    return HttpResponse.json({
+      id: "2b225b31-904a-443b-a898-a280fa8e0356",
+      email,
+      firstName: "John",
+      lastName: "Maverick",
+      avatarUrl: "https://i.pravatar.cc/100?img=12",
+    });
+  }),
 ];
