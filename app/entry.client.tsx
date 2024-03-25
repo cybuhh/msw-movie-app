@@ -1,7 +1,17 @@
-import { RemixBrowser } from '@remix-run/react'
-import { startTransition } from 'react'
-import { hydrateRoot } from 'react-dom/client'
+import { RemixBrowser } from "@remix-run/react";
+import { startTransition } from "react";
+import { hydrateRoot } from "react-dom/client";
 
-startTransition(() => {
-  hydrateRoot(document, <RemixBrowser />)
-})
+async function enableApiMocking() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+  const { worker } = await import("./__mocks__/browser");
+  await worker.start();
+}
+
+enableApiMocking().then(() =>
+  startTransition(() => {
+    hydrateRoot(document, <RemixBrowser />);
+  })
+);
