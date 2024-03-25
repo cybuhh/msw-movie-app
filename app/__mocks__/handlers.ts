@@ -66,7 +66,11 @@ export const handlers = [
     return new HttpResponse("Not found", { status: 404 });
   }),
 
-  http.get("/api/recommendations", () => {
-    return HttpResponse.json(movies.slice(0, 2));
+  http.get("/api/recommendations", ({ request }) => {
+    const url = new URL(request.url);
+    const movieId = url.searchParams.get("movieId");
+    const recommendations = movies.filter((movie) => movie.id !== movieId);
+
+    return HttpResponse.json(recommendations);
   }),
 ];

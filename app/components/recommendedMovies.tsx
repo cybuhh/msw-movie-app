@@ -1,20 +1,25 @@
-import { MovieThumbnail } from './movieThumbnail'
-import { ErrorBanner } from './errorBanner'
-import { useRequest } from '~/hooks/useRequest'
-import type { Movie } from '~/types'
+import { MovieThumbnail } from "./movieThumbnail";
+import { ErrorBanner } from "./errorBanner";
+import { useRequest } from "~/hooks/useRequest";
+import type { Movie } from "~/types";
 
-export function RecommendedMovies() {
-  const { state, error, data } =
-    useRequest<Array<Movie>>(`/api/recommendations`)
+interface RecommendedMoviesProps {
+  movieId: string;
+}
 
-  if (state === 'idle' || (state === 'done' && data == null && error == null)) {
-    return null
+export function RecommendedMovies({ movieId }: RecommendedMoviesProps) {
+  const { state, error, data } = useRequest<Array<Movie>>(
+    `/api/recommendations?movieId=${movieId}`
+  );
+
+  if (state === "idle" || (state === "done" && data == null && error == null)) {
+    return null;
   }
 
   return (
     <section>
       <h3 className="text-2xl font-bold mb-5">Recommended</h3>
-      {state === 'loading' ? (
+      {state === "loading" ? (
         <ul className="grid grid-cols-3 gap-5">
           <li>
             <div className="h-[165px] bg-neutral-800 bg-opacity-50 border border-neutral-800 rounded-lg animate-placeholder" />
@@ -43,5 +48,5 @@ export function RecommendedMovies() {
         <p className="text-neutral-500">No recommendations found.</p>
       )}
     </section>
-  )
+  );
 }
