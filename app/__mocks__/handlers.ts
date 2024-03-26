@@ -6,6 +6,31 @@ import schema from "./graphql-schema";
 const customerService = graphql.link("http://api.example.com/review-service");
 
 export const handlers = [
+  http.get("https://api.example.com/movies/:slug/stream", async () => {
+    const videoResponse = await fetch(
+      "https://nickdesaulniers.github.io/netfix/demo/frag_bunny.mp4"
+    );
+
+    const videoStream = videoResponse.body;
+
+    if (!videoStream) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    const latencyStream = new TransformStream({
+      start() {},
+      async transform(chunk, controller) {
+        await delay(500);
+        controller.enqueue(chunk);
+      },
+    });
+
+    return new HttpResponse(
+      videoStream.pipeThrough(latencyStream),
+      videoResponse
+    );
+  }),
+
   http.get("/api/featured", async ({ request }) => {
     const response = await fetch(bypass(request));
     const originalMovies = await response.json();
