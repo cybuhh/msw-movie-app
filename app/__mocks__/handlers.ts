@@ -1,4 +1,4 @@
-import { http, HttpResponse, delay, graphql, passthrough } from "msw";
+import { http, HttpResponse, delay, graphql, passthrough, bypass } from "msw";
 import { movies } from "./movies";
 import { graphql as executeGraphql } from "graphql";
 import schema from "./graphql-schema";
@@ -6,6 +6,13 @@ import schema from "./graphql-schema";
 const customerService = graphql.link("http://api.example.com/review-service");
 
 export const handlers = [
+  http.get("/api/featured", async ({ request }) => {
+    const response = await fetch(bypass(request));
+    const originalMovies = await response.json();
+
+    return HttpResponse.json(originalMovies.concat(movies));
+  }),
+
   http.get("https://api.example.com/movies/featured", () => {
     return HttpResponse.json(movies);
   }),
@@ -41,7 +48,7 @@ export const handlers = [
       return passthrough();
     }
 
-    if (movieId === "b2b7e2d9-8b2e-4b7a-9b8a-7f9a0d7f7e0e") {
+    if (movieId === "b27e2d9-8b2e-4b7a-9b8a-7f9a0d7f7e0e") {
       return new HttpResponse(null, { status: 500 });
     }
 
