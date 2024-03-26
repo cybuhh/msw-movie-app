@@ -3,6 +3,8 @@ import { movies } from "./movies";
 import { graphql as executeGraphql } from "graphql";
 import schema from "./graphql-schema";
 
+const customerService = graphql.link("http://api.example.com/review-service");
+
 export const handlers = [
   http.get("https://api.example.com/movies/featured", () => {
     return HttpResponse.json(movies);
@@ -59,6 +61,19 @@ export const handlers = [
       firstName: "John",
       lastName: "Maverick",
       avatarUrl: "https://i.pravatar.cc/100?img=12",
+    });
+  }),
+
+  customerService.query("ListReviews", () => {
+    return HttpResponse.json({
+      data: {
+        serviceReviews: [
+          {
+            id: "45e...",
+            message: "Hello world",
+          },
+        ],
+      },
     });
   }),
 
